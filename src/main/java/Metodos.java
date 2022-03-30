@@ -106,6 +106,7 @@ public class Metodos {
     public static void bot(String token) {
         final DiscordClient client = DiscordClient.create(token);
         final GatewayDiscordClient gateway = client.login().block();
+        String[] lista = fotos();
 
         gateway.on(MessageCreateEvent.class).subscribe(event -> {
             final Message message = event.getMessage();
@@ -119,20 +120,28 @@ public class Metodos {
                 builder.title("Amongos");
                 builder.url(ANY_URL);
                 builder.description("sus");
-                //  builder.addField("addField", "inline = true", true);
+                builder.addField("addField", "inline = true", true);
                 // builder.addField("addFIeld", "inline = true", true);
                 //builder.addField("addFile", "inline = false", false);
                 builder.thumbnail(IMAGE_URL);
                 //builder.footer("esto no se que es --> 2022", IMAGE_URL);
                 builder.timestamp(Instant.now());
                 channel.createMessage(builder.build()).block();
+            } else if ("/list".equals(message.getContent())) {
+                final MessageChannel channel = message.getChannel().block();
+                EmbedCreateSpec.Builder builder = EmbedCreateSpec.builder();
+                for (String str : lista) {
+                    builder.description(str);
+                    channel.createMessage(builder.build()).block();
+                }
+
             }
         });
 
         gateway.onDisconnect().block();
     }
 
-    public void fotos() {
+    public static String[] fotos() {
         File fichero = new File("/home/dam1/bot");
         // returns an array of all files
         String[] fileList = fichero.list();
@@ -140,6 +149,7 @@ public class Metodos {
         for (String str : fileList) {
             System.out.println(str);
         }
+        return fileList;
     }
 }
 
