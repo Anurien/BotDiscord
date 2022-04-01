@@ -4,14 +4,19 @@ import discord4j.core.event.domain.lifecycle.ReadyEvent;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.User;
+import discord4j.core.object.entity.channel.GuildMessageChannel;
 import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.core.spec.EmbedCreateSpec;
+import discord4j.core.spec.MessageCreateSpec;
+import discord4j.rest.util.Color;
 import reactor.core.publisher.Mono;
 
+import javax.naming.Context;
 import javax.swing.*;
 import java.io.*;
 import java.time.Instant;
 import java.util.Scanner;
+import java.util.function.Consumer;
 
 public class Metodos {
     private static String IMAGE_URL;
@@ -110,6 +115,10 @@ public class Metodos {
 
         gateway.on(MessageCreateEvent.class).subscribe(event -> {
             final Message message = event.getMessage();
+            EmbedCreateSpec embed = EmbedCreateSpec.builder()
+                    .color(Color.GREEN)
+                    .image("attachment://amongos.jpg")
+                    .build();
             if ("sus".equals(message.getContent())) {
                 IMAGE_URL = "https://c.tenor.com/bd5bGRCMdwwAAAAd/among-us-sussy-baka-sus-check.gif";
                 ANY_URL = "https://www.youtube.com/watch?v=D32EHS748D4";
@@ -134,7 +143,26 @@ public class Metodos {
                     builder.description(str);
                     channel.createMessage(builder.build()).block();
                 }
+            }else if ("/foto".equals(message.getContent())){
+                final MessageChannel channel = message.getChannel().block();
+                EmbedCreateSpec.Builder builder = EmbedCreateSpec.builder();
+                builder.image("https://i0.wp.com/wipy.tv/wp-content/uploads/2020/02/Han-sobrevivio%CC%81-al-accidente-de-Tokyo-Drif.jpg?fit=1000%2C600&ssl=1");
+                channel.createMessage(builder.build()).block();
 
+            }else if("!embed".equals(message.getContent())) {
+                    final MessageChannel channel = message.getChannel().block();
+
+                    InputStream fileAsInputStream = null;
+                    try {
+                        fileAsInputStream = new FileInputStream("/home/dam1/Descargas/amongos.jpg");
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                    channel.createMessage(MessageCreateSpec.builder()
+                            .content("content? content")
+                            .addFile("amongos.jpg", fileAsInputStream)
+                            .addEmbed(embed)
+                            .build()).subscribe();
             }
         });
 
@@ -143,9 +171,7 @@ public class Metodos {
 
     public static String[] fotos() {
         File fichero = new File("/home/dam1/bot");
-        // returns an array of all files
         String[] fileList = fichero.list();
-
         for (String str : fileList) {
             System.out.println(str);
         }
